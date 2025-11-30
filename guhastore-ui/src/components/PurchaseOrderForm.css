@@ -1,0 +1,176 @@
+/* --- BỐ CỤC CHÍNH 2 CỘT --- */
+
+.purchase-form-layout {
+  display: flex; /* Kích hoạt Flexbox */
+  gap: 30px; /* Khoảng cách giữa 2 cột */
+  padding: 24px;
+  max-width: 1500px;
+  margin: 20px auto;
+  align-items: flex-start; /* Căn cột theo đỉnh */
+}
+
+/* CỘT TRÁI: Thông tin phiếu (Lớn hơn) */
+.form-main {
+  flex: 2; /* Chiếm 2/3 không gian */
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* CỘT PHẢI: Thêm sản phẩm (Nhỏ hơn) */
+.form-sidebar {
+  flex: 1; /* Chiếm 1/3 không gian */
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  /* Giữ sidebar đứng yên khi cuộn trang */
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+}
+
+
+/* --- STYLING CHUNG CHO FORM --- */
+
+h3, h4 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #222;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Quan trọng để padding không làm vỡ layout */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+
+/* --- STYLING BẢNG SẢN PHẨM --- */
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
+}
+
+.items-table th,
+.items-table td {
+  border: 1px solid #eee;
+  padding: 12px 15px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.items-table th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #444;
+}
+
+.items-table tbody tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+.items-table tfoot td {
+  border: none;
+  border-top: 2px solid #eee;
+  font-weight: bold;
+}
+
+.items-table tfoot td[colSpan="3"] {
+  text-align: right;
+  color: #555;
+}
+
+.items-table tfoot td[colSpan="2"] {
+  font-size: 1.3rem;
+  color: #d9534f; /* Màu đỏ cho tổng tiền */
+}
+
+
+/* --- STYLING CÁC NÚT BẤM --- */
+
+/* Nút bấm chung */
+.btn-submit,
+.btn-add,
+.btn-remove {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  text-align: center;
+}
+
+.btn-submit:active,
+.btn-add:active,
+.btn-remove:active {
+    transform: scale(0.98);
+}
+
+/* Nút "Hoàn thành" (Cột trái) */
+.btn-submit {
+  background-color: #28a745; /* Màu xanh lá */
+  color: white;
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 15px;
+}
+.btn-submit:hover {
+  background-color: #218838;
+}
+
+/* Nút "Thêm vào phiếu" (Cột phải) */
+.btn-add {
+  background-color: #007bff; /* Màu xanh dương */
+  color: white;
+  width: 100%;
+}
+.btn-add:hover {
+  background-color: #0069d9;
+}
+
+/* Nút "Xóa" (Trong bảng) */
+.btn-remove {
+  background-color: #dc3545; /* Màu đỏ */
+  color: white;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.btn-remove:hover {
+  background-color: #c82333;
+}
