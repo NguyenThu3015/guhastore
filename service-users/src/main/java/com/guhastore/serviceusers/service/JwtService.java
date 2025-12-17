@@ -25,7 +25,7 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    // 1. TẠO TOKEN 
+   
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
@@ -43,19 +43,19 @@ public class JwtService {
     
    
 
-    // 2. Lấy UserID từ token
+  
     public Long extractUserId(String token) {
         Number userId = extractClaim(token, claims -> claims.get("userId", Number.class));
         return userId.longValue();
     }
 
-    // 3. Hàm chung để lấy 1 "claim"
+    
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    // 4. Hàm kiểm tra token có hợp lệ không
+   
     public boolean isTokenValid(String token) {
         return !isTokenExpired(token);
     }
@@ -71,7 +71,7 @@ public class JwtService {
         String role = extractClaim(token, claims -> claims.get("role", String.class));
         return List.of(role);
     }
-    // 5. Hàm giải mã
+    
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
@@ -81,7 +81,7 @@ public class JwtService {
                 .getBody();
     }
     
-    // 6. Lấy key (Hàm này bạn đã có)
+   
     private Key getSigningKey() {
         byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);

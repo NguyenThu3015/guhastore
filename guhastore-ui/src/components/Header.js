@@ -12,7 +12,6 @@ const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
-
     
     useEffect(() => {
         const handleScroll = () => {
@@ -22,14 +21,12 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    
     const handleLogout = () => {
         logout();
         navigate('/login');
         setIsMobileMenuOpen(false);
     };
 
-    
     const NavItem = ({ to, children }) => (
         <NavLink to={to} className={({ isActive }) => 
             `relative px-1 py-2 text-sm font-medium transition-colors group ${
@@ -39,14 +36,12 @@ const Header = () => {
             {({ isActive }) => (
                 <>
                     {children}
-                    {/* Active/Hover Underline */}
                     <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-yellow-400 transform origin-left transition-transform duration-300 ease-out ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
                 </>
             )}
         </NavLink>
     );
 
-    
     const MobileNavItem = ({ to, children, onClick }) => (
         <NavLink 
             to={to} 
@@ -84,7 +79,8 @@ const Header = () => {
                 {/* Desktop Actions */}
                 <div className="hidden md:flex items-center gap-4">
                     {user ? (
-                        user.role === 'ADMIN' ? (
+                        /* --- SỬA Ở ĐÂY: CHO PHÉP ADMIN HOẶC EMPLOYEE --- */
+                        (user.role === 'ADMIN' || user.role === 'EMPLOYEE') ? (
                             /* Admin View */
                             <div className="flex items-center gap-4">
                                 <Link to="/admin" className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-sm font-medium transition-all shadow-lg shadow-indigo-500/30">
@@ -103,7 +99,6 @@ const Header = () => {
                                     </Link>
                                     <Link to="/cart" className="relative group">
                                         <RiShoppingCartLine size={22} className="text-gray-300 group-hover:text-yellow-400 transition-colors" />
-                                        {/* Badge count could go here */}
                                     </Link>
                                 </div>
                                 
@@ -156,11 +151,14 @@ const Header = () => {
                     
                     {user ? (
                         <>
-                            {user.role === 'ADMIN' ? (
+                            {/* --- ĐÃ SỬA Ở MOBILE MENU --- */}
+                            {(user.role === 'ADMIN' || user.role === 'EMPLOYEE') ? (
                                 <MobileNavItem to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                                    <span className="flex items-center gap-2 text-yellow-400"><RiAdminLine /> Trang Quản Trị</span>
+                                    <span className="flex items-center gap-2 text-yellow-400">
+                                        <RiAdminLine /> Trang Quản Trị
+                                    </span>
                                 </MobileNavItem>
-                            ) : (
+                            ) : (  
                                 <>
                                     <MobileNavItem to="/profile" onClick={() => setIsMobileMenuOpen(false)}>Hồ sơ cá nhân</MobileNavItem>
                                     <MobileNavItem to="/cart" onClick={() => setIsMobileMenuOpen(false)}>Giỏ hàng</MobileNavItem>

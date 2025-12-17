@@ -1,4 +1,3 @@
-
 package com.guhastore.serviceproducts.controller;
 
 import com.guhastore.serviceproducts.model.Article;
@@ -11,21 +10,20 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/articles")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/v1/articles") // API dành cho người dùng xem tin tức
 public class ArticleController {
 
     @Autowired
     private ArticleRepository articleRepository;
 
-    
+    // Lấy danh sách bài đã xuất bản (Ai cũng xem được)
     @GetMapping
     public ResponseEntity<List<Article>> getPublishedArticles() {
         List<Article> published = articleRepository.findByStatusOrderByPublishDateDesc("PUBLISHED");
         return ResponseEntity.ok(published);
     }
 
-    
+    // Xem chi tiết 1 bài (Ai cũng xem được)
     @GetMapping("/{id}")
     public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
         Optional<Article> articleOpt = articleRepository.findById(id);

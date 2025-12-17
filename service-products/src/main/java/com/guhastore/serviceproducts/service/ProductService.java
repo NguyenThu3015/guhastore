@@ -43,17 +43,16 @@ public class ProductService {
         try (Reader reader = new InputStreamReader(file.getInputStream());
              CSVReader csvReader = new CSVReader(reader)) {
 
-            // Đọc tất cả các dòng
+           
             List<String[]> rows = csvReader.readAll();
             
-            // Bỏ qua dòng tiêu đề (Header) đầu tiên
+         
             rows.remove(0);
 
             List<Product> productList = new ArrayList<>();
 
             for (String[] row : rows) {
-                // Giả sử file CSV có thứ tự cột:
-                // [0]Name, [1]Description, [2]Price, [3]Stock, [4]ImageURL, [5]BrandID, [6]CategoryID
+               
                 
                 Product p = new Product();
                 p.setName(row[0]);
@@ -62,7 +61,7 @@ public class ProductService {
                 p.setStockQuantity(Integer.parseInt(row[3]));
                 p.setImageUrl(row[4]);
 
-                // Tìm Brand và Category (Nếu không thấy thì lỗi hoặc bỏ qua - ở đây ta ném lỗi)
+                
                 Long brandId = Long.parseLong(row[5]);
                 Long categoryId = Long.parseLong(row[6]);
                 
@@ -116,13 +115,67 @@ public class ProductService {
         }
     }
 
+    
+
+    /**
+     * Giữ chỗ cho sản phẩm.
+     * @throws RuntimeException 
+     */
+    @Transactional
+    public void reserveStock(StockRequestDto request) {
+        for (StockRequestDto.StockItemDto item : request.getItems()) {
+            Product product = productRepository.findById(item.getProductId())
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại: " + item.getProductId()));
+            
+            
+            if (product.getStockQuantity() < item.getQuantity()) {
+                throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getName());
+            }
+
+            
+            product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
+            product.setReservedQuantity(product.getReservedQuantity() + item.getQuantity());
+            
+            productRepository.save(product);
+        }
+    }
+
+    
     @Transactional
     public void releaseStock(StockRequestDto request) {
-        List<StockRequestDto.StockItemDto> items = request.getItems();
-        for (StockRequestDto.StockItemDto item : items) {
+        for (StockRequestDto.StockItemDto item : request.getItems()) {
             Product product = productRepository.findById(item.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProductId()));
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại: " + item.getProductId()));
+
+            
             product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+            product.setReservedQuantity(product.getReservedQuantity() - item.getQuantity());
+
+           
+            if (product.getReservedQuantity() < 0) {
+                
+                System.err.println("CẢNH BÁO: Số lượng giữ chỗ bị âm cho sản phẩm ID: " + item.getProductId());
+                product.setReservedQuantity(0);
+            }
+            
+            productRepository.save(product);
+        }
+    }
+    
+    
+    @Transactional
+    public void confirmStockDeduction(StockRequestDto request) {
+         for (StockRequestDto.StockItemDto item : request.getItems()) {
+            Product product = productRepository.findById(item.getProductId())
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại: " + item.getProductId()));
+
+            // THỰC HIỆN XÁC NHẬN
+            product.setReservedQuantity(product.getReservedQuantity() - item.getQuantity());
+            
+            if (product.getReservedQuantity() < 0) {
+                 product.setReservedQuantity(0);
+            }
+            
             productRepository.save(product);
         }
     }

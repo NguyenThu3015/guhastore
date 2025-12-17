@@ -17,7 +17,7 @@ public class BrandController {
     private BrandRepository brandRepository;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     public Brand createBrand(@RequestBody Brand brand) {
         return brandRepository.save(brand);
     }
@@ -29,7 +29,7 @@ public class BrandController {
  
     
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     public ResponseEntity<Brand> updateBrand(@PathVariable Long id, @RequestBody Brand brandDetails) {
         
         Optional<Brand> brandOptional = brandRepository.findById(id);
@@ -46,7 +46,7 @@ public class BrandController {
     
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     public ResponseEntity<Void> deleteBrand(@PathVariable Long id) {
         
         if (!brandRepository.existsById(id)) {

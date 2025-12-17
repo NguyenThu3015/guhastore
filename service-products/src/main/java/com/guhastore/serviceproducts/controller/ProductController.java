@@ -15,16 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.web.multipart.MultipartFile;
+
 @RestController
 @RequestMapping("/api/v1/products")
-@CrossOrigin(origins = "http://localhost:3000")
+// Đã xóa @CrossOrigin vì đã cấu hình bên SecurityConfig
 public class ProductController {
 
     @Autowired
@@ -36,8 +37,8 @@ public class ProductController {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    // --- IMPORT (Quyền đã được check bên SecurityConfig: ADMIN & EMPLOYEE) ---
     @PostMapping("/import")
-    @PreAuthorize("hasAuthority('ADMIN')") // Chỉ Admin
     public ResponseEntity<String> importProducts(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File không được để trống");
@@ -50,6 +51,7 @@ public class ProductController {
         }
     }
 
+    // --- PUBLIC API ---
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return productRepository.findById(id)
@@ -57,31 +59,32 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    
+    // --- CREATE (Quyền: ADMIN & EMPLOYEE) ---
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public Product createProduct(@RequestBody Product product,
                                  @RequestParam Long brandId,
                                  @RequestParam Long categoryId) {
         return productService.createProduct(product, brandId, categoryId);
     }
-    
-    
+
+    // --- UPDATE (Quyền: ADMIN & EMPLOYEE) ---
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
             @RequestBody Product productDetails,
             @RequestParam Long brandId,
             @RequestParam Long categoryId) {
+        
         Optional<Product> optionalProduct = productRepository.findById(id);
         if (optionalProduct.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Brand ID"));
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Category ID"));
+
         Product existingProduct = optionalProduct.get();
         existingProduct.setName(productDetails.getName());
         existingProduct.setDescription(productDetails.getDescription());
@@ -90,20 +93,19 @@ public class ProductController {
         existingProduct.setImageUrl(productDetails.getImageUrl());
         existingProduct.setBrand(brand);
         existingProduct.setCategory(category);
+
         Product updatedProduct = productRepository.save(existingProduct);
         return ResponseEntity.ok(updatedProduct);
     }
-    
-    
+
+    // --- DELETE (Quyền: ADMIN & EMPLOYEE) ---
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProductSafely(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-
-    
+    // --- FILTER / SEARCH ---
     @GetMapping
     public List<Product> getAllProducts(
             @RequestParam(required = false) String search,
@@ -111,6 +113,7 @@ public class ProductController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice) {
+        
         Specification<Product> spec = (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (search != null && !search.isEmpty()) {

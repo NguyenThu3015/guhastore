@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
+import com.guhastore.serviceusers.model.Role;
 import java.time.Instant;
 
 @Service
@@ -49,7 +49,7 @@ public class AuthService {
         
         newUser.setPhoneNumber(registerDto.getPhoneNumber());
         newUser.setAddress(registerDto.getAddress());
-        newUser.setRole("CUSTOMER"); // Mặc định là khách hàng
+        newUser.setRole(Role.CUSTOMER); // Sửa thành Enum // Mặc định là khách hàng
         newUser.setRegistrationDate(Instant.now());
 
         // 4. Lưu vào CSDL
@@ -66,9 +66,9 @@ public class AuthService {
 
         return userDto;
     }
-    // --- HÀM LOGIN (UC07) ---
+   
     public JwtAuthResponseDto login(LoginDto loginDto) {
-        // 1. Xác thực người dùng (email + password)
+       
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getEmail(),
@@ -76,22 +76,22 @@ public class AuthService {
                 )
         );
 
-        // 2. Nếu xác thực thành công, lưu vào SecurityContext
+        
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
 
 
-        // 5. Lấy thông tin User (không có pass) để trả về
+       
         User user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Lỗi không xác định"));
         String token = jwtService.generateToken(user);
         UserDto userDto = mapUserToUserDto(user);
 
-        // 6. Trả về Token và thông tin User
+        
         return new JwtAuthResponseDto(token, userDto);
     }
 
-    // Hàm tiện ích để chuyển User sang UserDto
+    
     private UserDto mapUserToUserDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());

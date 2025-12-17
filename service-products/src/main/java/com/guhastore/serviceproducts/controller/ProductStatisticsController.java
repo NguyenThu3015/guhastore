@@ -20,7 +20,7 @@ public class ProductStatisticsController {
     
     @GetMapping("/low-stock")
     public ResponseEntity<List<Product>> getLowStockProducts(
-            @RequestParam(defaultValue = "10") Integer threshold) {
+            @RequestParam(defaultValue = "20") Integer threshold) {
         List<Product> products = productRepository.findByStockQuantityLessThanEqual(threshold);
         return ResponseEntity.ok(products);
     }

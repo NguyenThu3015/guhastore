@@ -17,7 +17,7 @@ public class CategoryController {
     private CategoryRepository categoryRepository;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     public Category createCategory(@RequestBody Category category) {
         return categoryRepository.save(category);
     }
@@ -28,7 +28,7 @@ public class CategoryController {
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
 
         Optional<Category> categoryOptional = categoryRepository.findById(id);
@@ -44,7 +44,7 @@ public class CategoryController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
 
         if (!categoryRepository.existsById(id)) {

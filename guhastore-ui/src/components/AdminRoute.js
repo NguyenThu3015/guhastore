@@ -7,7 +7,7 @@ const AdminRoute = () => {
     const { user } = useAuth();
 
     
-    if (user && user.role === 'ADMIN') {
+    if (user && (user.role === 'ADMIN' || user.role === 'EMPLOYEE')) {
         
         return <Outlet />;
     }

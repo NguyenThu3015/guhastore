@@ -52,10 +52,14 @@ public class SecurityConfig {
             )
             // PHÂN QUYỀN
             .authorizeHttpRequests(auth -> auth
-                 // Cho phép API đăng nhập/đăng ký
+                 // 1. Cho phép API Auth (Login/Register) công khai
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                
+                // 2. API Cá nhân (Ai đăng nhập rồi cũng dùng được)
                 .requestMatchers("/api/v1/wishlist/**").authenticated()
                 .requestMatchers("/api/v1/profile/**").authenticated()
+                
+                // 3. API Quản trị User & Thống kê khách mới: CHỈ ADMIN (Nhân viên không được vào)
                 .requestMatchers("/api/v1/admin/statistics/**").hasAuthority("ADMIN")
                 .requestMatchers("/api/v1/admin/users/**").hasAuthority("ADMIN")
 

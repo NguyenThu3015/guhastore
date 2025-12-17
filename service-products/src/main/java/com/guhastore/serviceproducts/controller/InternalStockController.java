@@ -33,4 +33,14 @@ public class InternalStockController {
             return ResponseEntity.badRequest().build(); 
         }
     }
+    @PostMapping("/confirm")
+    public ResponseEntity<Void> confirmStock(@RequestBody StockRequestDto request) {
+        try {
+            productService.confirmStockDeduction(request);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
 }

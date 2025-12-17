@@ -32,25 +32,41 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             ) 
             .authorizeHttpRequests(auth -> auth
-                
-                
+            
+                .requestMatchers("/uploads/**").permitAll()
+
+                //  API CÔNG KHAI 
                 .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/brands/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/brands/**", "/api/v1/articles/**").permitAll()
+                .requestMatchers("/api/v1/internal/stock/**").permitAll() // API nội bộ
+                        
+                // --- 3. QUYỀN ADMIN 
+                .requestMatchers("/api/v1/admin/statistics/**").hasAuthority("ADMIN") // Thống kê
+                .requestMatchers("/api/v1/admin/inventory/**").hasAuthority("ADMIN")  // Kho hàng
+                .requestMatchers("/api/v1/admin/purchase-orders/**").hasAuthority("ADMIN") // Nhập hàng
 
+                // --- 4. QUYỀN ADMIN & NHÂN VIÊN
+                // Import sản phẩm
+                .requestMatchers(HttpMethod.POST, "/api/v1/products/import").hasAnyAuthority("ADMIN", "EMPLOYEE")
                 
-                
-                .requestMatchers(HttpMethod.POST, "/api/v1/products").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").authenticated()
+                // Quản lý Sản phẩm (Thêm/Sửa/Xóa)
+                .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
 
+                // Quản lý Catalog (Danh mục/Thương hiệu)
+                .requestMatchers("/api/v1/categories/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                .requestMatchers("/api/v1/brands/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
                 
+                // Quản lý Bài viết
+                .requestMatchers("/api/v1/admin/articles/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+
+                // --- 5. KHÁCH HÀNG (Đã đăng nhập) ---
                 .requestMatchers(HttpMethod.POST, "/api/v1/reviews/**").authenticated()
-                .requestMatchers("/api/v1/admin/statistics/**").hasAuthority("ADMIN")
-                .requestMatchers("/api/v1/admin/purchase-orders/**").hasAuthority("ADMIN")
-                .requestMatchers("/api/v1/admin/articles/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/products/import").hasAuthority("ADMIN")
-                .requestMatchers("/api/v1/internal/stock/**").permitAll()
-                .anyRequest().permitAll() 
+
+                // --- 6. CÁC API KHÁC ---
+                .anyRequest().authenticated() 
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -3,6 +3,8 @@ package com.guhastore.serviceusers.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.guhastore.serviceusers.model.Role; 
+
 @Getter
 @Setter
 public class UserDto {
@@ -11,5 +13,7 @@ public class UserDto {
     private String email;
     private String phoneNumber;
     private String address;
-    private String role;
+    
+    
+    private Role role; 
 }

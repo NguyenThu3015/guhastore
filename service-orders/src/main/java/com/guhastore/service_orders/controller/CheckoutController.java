@@ -32,9 +32,9 @@ public class CheckoutController {
     private OrderRepository orderRepository;
 
     @Autowired
-    private RestTemplate restTemplate; // <-- TIÊM (INJECT) RESTTEMPLATE
+    private RestTemplate restTemplate; 
 
-    // Định nghĩa URL của service-products
+
     private final String STOCK_SERVICE_URL = "http://localhost:8081/api/v1/internal/stock";
 
     @PostMapping

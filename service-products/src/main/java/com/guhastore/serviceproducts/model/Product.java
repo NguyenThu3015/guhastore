@@ -1,4 +1,3 @@
-
 package com.guhastore.serviceproducts.model;
 
 import jakarta.persistence.*;
@@ -7,11 +6,13 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
+
 @Entity
 @Table(name = "products")
 @Getter
-@Setter
+@Setter 
 public class Product {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,13 +26,13 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price; 
 
-    @Column(nullable = false)
-    private Integer stockQuantity;
-    
+    @Column(name = "stock_quantity", nullable = false)
+    private Integer stockQuantity; 
 
     private String imageUrl;
 
-   
+    @Column(name = "reserved_quantity", nullable = false, columnDefinition = "int default 0")
+    private int reservedQuantity;
 
     @ManyToOne 
     @JoinColumn(name = "brand_id")
@@ -44,4 +45,6 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference 
     private List<Review> reviews;
+
+    
 }

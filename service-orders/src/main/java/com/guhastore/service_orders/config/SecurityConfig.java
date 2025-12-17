@@ -1,4 +1,3 @@
-//com.guhastore.serviceorders.config
 package com.guhastore.service_orders.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +34,16 @@ public class SecurityConfig {
             )
             
             .authorizeHttpRequests(auth -> auth
+                // --- API CHO KHÁCH HÀNG ---
                 .requestMatchers("/api/v1/cart/**").authenticated()
                 .requestMatchers("/api/v1/checkout/**").authenticated()
-                .requestMatchers("/api/v1/orders/**").authenticated()
+                .requestMatchers("/api/v1/orders/**").authenticated() // Lịch sử đơn hàng của user
 
-                .requestMatchers("/api/v1/admin/orders/**").hasAuthority("ADMIN")
+                // --- API QUẢN TRỊ ---
+                // 1. Quản lý Đơn hàng: ADMIN và EMPLOYEE đều được làm
+                .requestMatchers("/api/v1/admin/orders/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                
+                // 2. Thống kê Doanh thu: CHỈ ADMIN được xem
                 .requestMatchers("/api/v1/admin/statistics/**").hasAuthority("ADMIN")
                 
                 .anyRequest().permitAll() 
